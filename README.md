@@ -157,6 +157,27 @@ classDiagram
     EventListeners --> Utilidades : orquesta
     EventListeners --> BaseDeDatos : orquesta
     EventListeners --> FuncionesDeDatos : orquesta
+
+    class ScriptJS {
+        <<punto de entrada>>
+        +db: BaseDeDatos
+        +util: Utilidades
+        +datos: FuncionesDeDatos
+        +renderizado: FuncionesDeRenderizado
+        +nav: NavegacionSecciones
+        +auth: Autenticacion
+        +cambioPlan: CambioDePlan
+        +listeners: EventListeners
+    }
+
+    ScriptJS --> BaseDeDatos : instancia
+    ScriptJS --> Utilidades : instancia
+    ScriptJS --> FuncionesDeDatos : instancia
+    ScriptJS --> FuncionesDeRenderizado : instancia
+    ScriptJS --> NavegacionSecciones : instancia
+    ScriptJS --> Autenticacion : instancia
+    ScriptJS --> CambioDePlan : instancia
+    ScriptJS --> EventListeners : instancia e inicializa
 ```
 
 ---
