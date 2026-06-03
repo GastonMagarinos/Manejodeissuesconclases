@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IRONFORGE GYM — Sistema de Membresías</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,300;0,600;0,700;0,900;1,700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ========================================================
+       PANTALLA: LOGIN / REGISTRO
+  ======================================================== -->
+  <section id="screen-auth" class="screen active">
+
+    <!-- Branding lateral decorativo -->
+    <div class="auth-brand">
+      <div class="auth-brand__logo">
+        <span class="logo-icon">⚡</span>
+        <span class="logo-text">IRONFORGE</span>
+      </div>
+      <p class="auth-brand__tagline">FORJA TU MEJOR<br/>VERSIÓN</p>
+      <div class="auth-brand__stats">
+        <div class="brand-stat"><span class="brand-stat__num" id="brand-total-members">—</span><span class="brand-stat__label">Miembros</span></div>
+        <div class="brand-stat"><span class="brand-stat__num">3</span><span class="brand-stat__label">Planes</span></div>
+      </div>
+      <div class="auth-brand__decor"></div>
+    </div>
+
+    <!-- Panel de formularios -->
+    <div class="auth-panel">
+
+      <!-- Tabs para cambiar entre Login y Registro -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login">Iniciar Sesión</button>
+        <button class="auth-tab" data-tab="register">Registrarse</button>
+      </div>
+
+      <!-- Mensaje de error/éxito global -->
+      <div id="auth-message" class="auth-message hidden"></div>
+
+      <!-- ── FORMULARIO: LOGIN ── -->
+      <div id="tab-login" class="tab-content active">
+        <h2 class="form-title">Bienvenido de vuelta</h2>
+        <p class="form-subtitle">Ingresa tus credenciales para continuar</p>
+
+        <div class="form-group">
+          <label for="login-email">Correo electrónico</label>
+          <input type="email" id="login-email" placeholder="tu@correo.com" autocomplete="email" />
+        </div>
+        <div class="form-group">
+          <label for="login-password">Contraseña</label>
+          <div class="input-wrapper">
+            <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" />
+            <button class="toggle-pass" data-target="login-password" type="button">👁</button>
+          </div>
+        </div>
+
+        <!-- Accesos rápidos de demo -->
+        <div class="demo-hint">
+          <span>Demo rápido:</span>
+          <button class="demo-btn" data-email="carlos.garcia@gym.com" data-pass="Pass1234">Premium</button>
+          <button class="demo-btn" data-email="lucia.martinez@gym.com" data-pass="Pass1234">Básico</button>
+          <button class="demo-btn" data-email="pedro.lopez@gym.com" data-pass="Pass1234">Pase Diario</button>
+        </div>
+
+        <button id="btn-login" class="btn btn--primary btn--full">ENTRAR AL GYM</button>
+      </div>
+
+      <!-- ── FORMULARIO: REGISTRO ── -->
+      <div id="tab-register" class="tab-content">
+        <h2 class="form-title">Únete ahora</h2>
+        <p class="form-subtitle">Crea tu cuenta y empieza hoy</p>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reg-nombre">Nombre completo</label>
+            <input type="text" id="reg-nombre" placeholder="Tu nombre" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="reg-email">Correo electrónico</label>
+          <input type="email" id="reg-email" placeholder="tu@correo.com" />
+        </div>
+        <div class="form-group">
+          <label for="reg-password">Contraseña</label>
+          <div class="input-wrapper">
+            <input type="password" id="reg-password" placeholder="Mínimo 6 caracteres" />
+            <button class="toggle-pass" data-target="reg-password" type="button">👁</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="reg-plan">Plan inicial</label>
+          <select id="reg-plan">
+            <option value="Pase Diario">Pase Diario — $5/día</option>
+            <option value="Básico">Básico — $29/mes</option>
+            <option value="Premium">Premium — $59/mes</option>
+          </select>
+        </div>
+
+        <button id="btn-register" class="btn btn--primary btn--full">CREAR CUENTA</button>
+      </div>
+
+    </div><!-- /auth-panel -->
+  </section>
+
+  <!-- ========================================================
+       PANTALLA: APP PRINCIPAL (dashboard, planes, ranking)
+  ======================================================== -->
+  <section id="screen-app" class="screen">
+
+    <!-- NAV TOP BAR -->
+    <header class="topbar">
+      <div class="topbar__brand">
+        <span class="logo-icon">⚡</span>
+        <span class="logo-text">IRONFORGE</span>
+      </div>
+
+      <nav class="topbar__nav">
+        <button class="nav-btn active" data-section="dashboard">
+          <span class="nav-icon">🏠</span><span class="nav-label">Mi Panel</span>
+        </button>
+        <button class="nav-btn" data-section="planes">
+          <span class="nav-icon">💳</span><span class="nav-label">Planes</span>
+        </button>
+        <button class="nav-btn" data-section="ranking">
+          <span class="nav-icon">🏆</span><span class="nav-label">Ranking</span>
+        </button>
+      </nav>
+
+      <div class="topbar__user">
+        <span id="topbar-username" class="topbar-username">—</span>
+        <button id="btn-logout" class="btn btn--ghost btn--sm">Salir</button>
+      </div>
+    </header>
+
+    <!-- ── SECCIÓN: DASHBOARD ── -->
+    <main id="section-dashboard" class="app-section active">
+
+      <div class="section-header">
+        <h1 class="section-title">Tu Panel <span class="accent">Personal</span></h1>
+        <p class="section-sub" id="dash-welcome">Bienvenido de vuelta</p>
+      </div>
+
+      <!-- Tarjetas de resumen -->
+      <div class="dash-grid">
+
+        <!-- Tarjeta: Perfil / Plan actual -->
+        <div class="card card--plan" id="card-plan">
+          <div class="card__badge" id="dash-plan-badge">Premium</div>
+          <div class="card__body">
+            <p class="card__label">PLAN ACTIVO</p>
+            <h2 class="card__title" id="dash-plan-nombre">—</h2>
+            <div class="plan-estado" id="dash-plan-estado">
+              <span class="estado-dot"></span><span class="estado-text">—</span>
+            </div>
+          </div>
+          <div class="card__footer">
+            <span class="card__hint">Haz clic en <strong>Planes</strong> para actualizar</span>
+          </div>
+          <div class="card-glow"></div>
+        </div>
+
+        <!-- Tarjeta: Asistencias -->
+        <div class="card card--stats">
+          <p class="card__label">ASISTENCIAS ESTE MES</p>
+          <div class="stat-big">
+            <span class="stat-big__num" id="dash-asistencias">—</span>
+            <span class="stat-big__unit">/ 30 días</span>
+          </div>
+          <!-- Barra de progreso visual -->
+          <div class="progress-bar">
+            <div class="progress-bar__fill" id="dash-progress" style="width:0%"></div>
+          </div>
+          <p class="progress-label" id="dash-progress-label">—</p>
+        </div>
+
+        <!-- Tarjeta: Posición en ranking -->
+        <div class="card card--rank">
+          <p class="card__label">TU POSICIÓN EN EL RANKING</p>
+          <div class="rank-display">
+            <span class="rank-num" id="dash-rank-pos">#—</span>
+            <span class="rank-total" id="dash-rank-total">de — miembros</span>
+          </div>
+          <p class="rank-emoji" id="dash-rank-emoji">🏅</p>
+          <button class="btn btn--ghost btn--sm" data-section="ranking" id="btn-ver-ranking">Ver Ranking Completo →</button>
+        </div>
+
+        <!-- Tarjeta: Logros / Badges motivacionales -->
+        <div class="card card--logros">
+          <p class="card__label">LOGROS DESBLOQUEADOS</p>
+          <div class="logros-grid" id="dash-logros">
+            <!-- Se renderizan desde JS -->
+          </div>
+        </div>
+
+      </div><!-- /dash-grid -->
+
+      <!-- Historial simulado de los últimos días -->
+      <div class="historial-section">
+        <h3 class="subsection-title">Actividad Reciente (últimos 7 días)</h3>
+        <div class="historial-grid" id="dash-historial">
+          <!-- Se renderizan desde JS -->
+        </div>
+      </div>
+
+    </main>
+
+    <!-- ── SECCIÓN: PLANES ── -->
+    <main id="section-planes" class="app-section">
+
+      <div class="section-header">
+        <h1 class="section-title">Nuestros <span class="accent">Planes</span></h1>
+        <p class="section-sub">Elige el que mejor se adapte a tu estilo de vida</p>
+      </div>
+
+      <div class="planes-grid">
+
+        <!-- Plan: Pase Diario -->
+        <div class="plan-card" data-plan="Pase Diario">
+          <div class="plan-card__header">
+            <span class="plan-icon">⚡</span>
+            <h3 class="plan-name">Pase Diario</h3>
+            <div class="plan-price"><span class="price-amount">$5</span><span class="price-period">/día</span></div>
+          </div>
+          <ul class="plan-features">
+            <li class="feat feat--yes">Acceso por 1 día completo</li>
+            <li class="feat feat--yes">Todas las máquinas disponibles</li>
+            <li class="feat feat--yes">Vestidores y duchas</li>
+            <li class="feat feat--no">Clases grupales</li>
+            <li class="feat feat--no">Asesoría nutricional</li>
+            <li class="feat feat--no">Plan de entrenamiento</li>
+          </ul>
+          <button class="btn btn--outline btn--full plan-btn" data-plan="Pase Diario">SELECCIONAR</button>
+        </div>
+
+        <!-- Plan: Básico (destacado) -->
+        <div class="plan-card plan-card--featured" data-plan="Básico">
+          <div class="plan-card__badge">MÁS POPULAR</div>
+          <div class="plan-card__header">
+            <span class="plan-icon">🔥</span>
+            <h3 class="plan-name">Básico</h3>
+            <div class="plan-price"><span class="price-amount">$29</span><span class="price-period">/mes</span></div>
+          </div>
+          <ul class="plan-features">
+            <li class="feat feat--yes">Acceso ilimitado al gym</li>
+            <li class="feat feat--yes">Todas las máquinas disponibles</li>
+            <li class="feat feat--yes">Vestidores y duchas</li>
+            <li class="feat feat--yes">2 clases grupales/semana</li>
+            <li class="feat feat--no">Asesoría nutricional</li>
+            <li class="feat feat--no">Plan de entrenamiento</li>
+          </ul>
+          <button class="btn btn--primary btn--full plan-btn" data-plan="Básico">SELECCIONAR</button>
+        </div>
+
+        <!-- Plan: Premium -->
+        <div class="plan-card" data-plan="Premium">
+          <div class="plan-card__header">
+            <span class="plan-icon">👑</span>
+            <h3 class="plan-name">Premium</h3>
+            <div class="plan-price"><span class="price-amount">$59</span><span class="price-period">/mes</span></div>
+          </div>
+          <ul class="plan-features">
+            <li class="feat feat--yes">Acceso ilimitado 24/7</li>
+            <li class="feat feat--yes">Todas las máquinas disponibles</li>
+            <li class="feat feat--yes">Vestidores y duchas VIP</li>
+            <li class="feat feat--yes">Clases grupales ilimitadas</li>
+            <li class="feat feat--yes">Asesoría nutricional mensual</li>
+            <li class="feat feat--yes">Plan de entrenamiento personalizado</li>
+          </ul>
+          <button class="btn btn--outline btn--full plan-btn" data-plan="Premium">SELECCIONAR</button>
+        </div>
+
+      </div><!-- /planes-grid -->
+
+      <!-- Modal de confirmación de plan -->
+      <div id="plan-modal" class="modal hidden">
+        <div class="modal__backdrop"></div>
+        <div class="modal__box">
+          <h3 class="modal__title">Confirmar cambio de plan</h3>
+          <p class="modal__body" id="modal-body-text">—</p>
+          <div class="modal__actions">
+            <button id="modal-cancel" class="btn btn--ghost">Cancelar</button>
+            <button id="modal-confirm" class="btn btn--primary">Confirmar</button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- ── SECCIÓN: RANKING ── -->
+    <main id="section-ranking" class="app-section">
+
+      <div class="section-header">
+        <h1 class="section-title">Top 10 <span class="accent">Constantes</span></h1>
+        <p class="section-sub">Los guerreros que no faltan nunca. ¿Estás en el podio?</p>
+      </div>
+
+      <!-- Podio Top 3 -->
+      <div class="podio" id="podio-container">
+        <!-- Se renderiza desde JS -->
+      </div>
+
+      <!-- Tabla ranking completa -->
+      <div class="ranking-table-wrapper">
+        <table class="ranking-table">
+          <thead>
+            <tr>
+              <th class="th-pos">Pos.</th>
+              <th class="th-nombre">Miembro</th>
+              <th class="th-plan">Plan</th>
+              <th class="th-asist">Asistencias</th>
+              <th class="th-bar">Progreso</th>
+            </tr>
+          </thead>
+          <tbody id="ranking-tbody">
+            <!-- Se renderizan desde JS -->
+          </tbody>
+        </table>
+      </div>
+
+    </main>
+
+  </section><!-- /screen-app -->
+
+  <!-- Toast de notificación -->
+  <div id="toast" class="toast hidden">
+    <span id="toast-msg"></span>
+  </div>
+
+  <!-- Módulos de la aplicación (orden de dependencias) -->
+  
+  <!-- Punto de entrada: instancia y conecta todas las clases -->
+  <script src="script.js"></script>
+</body>
+</html>
