@@ -49,15 +49,114 @@ files/
 
 Cada módulo está encapsulado en una **clase JavaScript**. `script.js` actúa como punto de entrada, instancia todas las clases respetando el orden de dependencias e inyecta las referencias necesarias entre módulos.
 
-```
-BaseDeDatos
-    └── FuncionesDeDatos
-            └── FuncionesDeRenderizado
-                    └── NavegacionSecciones
-                            ├── Autenticacion
-                            ├── CambioDePlan
-                            ├── Utilidades
-                            └── EventListeners
+---
+
+## 📐 Diagrama de Clases UML
+
+```mermaid
+classDiagram
+    class BaseDeDatos {
+        +PLANES: Array
+        +ESTADOS: Array
+        +NOMBRES: Array
+        +APELLIDOS: Array
+        +DB_USUARIOS: Array
+        +usuarioActual: Object
+        +planPendiente: String
+        -_randomInt(min, max) int
+        -_pick(arr) any
+        -_makeEmail(nombre, apellido) String
+        -_generarUsuariosFicticios() Array
+    }
+
+    class FuncionesDeDatos {
+        -db: BaseDeDatos
+        +obtenerTopRanking(n) Array
+        +obtenerPosicionRanking(usuario) int
+        +autenticarUsuario(email, password) Object
+        +emailExiste(email) Boolean
+        +registrarUsuario(nombre, email, password, plan) Object
+        +actualizarPlanUsuario(userId, nuevoPlan) void
+        +calcularLogros(usuario) Array
+        +simularHistorial(usuario) Array
+    }
+
+    class FuncionesDeRenderizado {
+        -db: BaseDeDatos
+        -datos: FuncionesDeDatos
+        +renderizarDashboard() void
+        +renderizarRanking() void
+        +marcarPlanActual() void
+        +actualizarContadorMiembros() void
+    }
+
+    class NavegacionSecciones {
+        -renderizado: FuncionesDeRenderizado
+        +mostrarPantalla(id) void
+        +mostrarSeccion(seccion) void
+    }
+
+    class Autenticacion {
+        -db: BaseDeDatos
+        -datos: FuncionesDeDatos
+        -nav: NavegacionSecciones
+        -util: Utilidades
+        -renderizado: FuncionesDeRenderizado
+        +handleLogin() void
+        +handleRegistro() void
+        +handleLogout() void
+        +setRenderizado(renderizado) void
+    }
+
+    class CambioDePlan {
+        -db: BaseDeDatos
+        -datos: FuncionesDeDatos
+        -renderizado: FuncionesDeRenderizado
+        -util: Utilidades
+        +mostrarModalPlan(plan) void
+        +confirmarCambioPlan() void
+        +cerrarModal() void
+    }
+
+    class Utilidades {
+        +mostrarMensajeAuth(texto, tipo) void
+        +mostrarToast(mensaje, tipo) void
+        +limpiarFormularios() void
+        +togglePassword(targetId) void
+        +cambiarTab(tab) void
+    }
+
+    class EventListeners {
+        -auth: Autenticacion
+        -cambioPlan: CambioDePlan
+        -nav: NavegacionSecciones
+        -renderizado: FuncionesDeRenderizado
+        -util: Utilidades
+        -db: BaseDeDatos
+        -datos: FuncionesDeDatos
+        +init() void
+    }
+
+    FuncionesDeDatos --> BaseDeDatos : usa
+    FuncionesDeRenderizado --> BaseDeDatos : usa
+    FuncionesDeRenderizado --> FuncionesDeDatos : usa
+    NavegacionSecciones --> FuncionesDeRenderizado : usa
+    Autenticacion --> BaseDeDatos : usa
+    Autenticacion --> FuncionesDeDatos : usa
+    Autenticacion --> NavegacionSecciones : usa
+    Autenticacion --> Utilidades : usa
+    Autenticacion --> FuncionesDeRenderizado : usa
+    CambioDePlan --> BaseDeDatos : usa
+    CambioDePlan --> FuncionesDeDatos : usa
+    CambioDePlan --> FuncionesDeRenderizado : usa
+    CambioDePlan --> Utilidades : usa
+    EventListeners --> Autenticacion : orquesta
+    EventListeners --> CambioDePlan : orquesta
+    EventListeners --> NavegacionSecciones : orquesta
+    EventListeners --> FuncionesDeRenderizado : orquesta
+    EventListeners --> Utilidades : orquesta
+    EventListeners --> BaseDeDatos : orquesta
+    EventListeners --> FuncionesDeDatos : orquesta
 ```
 
 ---
