@@ -2,7 +2,7 @@
    5. LÓGICA DE AUTENTICACIÓN
    ────────────────────────────────────────────────────────────── */
 
-class Autenticacion {
+export class Autenticacion {
   /**
    * @param {BaseDeDatos}        db
    * @param {FuncionesDeDatos}   datos

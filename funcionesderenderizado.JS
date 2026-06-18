@@ -2,7 +2,7 @@
    3. FUNCIONES DE RENDERIZADO (DOM)
    ────────────────────────────────────────────────────────────── */
 
-class FuncionesDeRenderizado {
+export class FuncionesDeRenderizado {
   /**
    * @param {BaseDeDatos}    db
    * @param {FuncionesDeDatos} datos

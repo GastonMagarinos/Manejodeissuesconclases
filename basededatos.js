@@ -137,11 +137,10 @@ function generarUsuariosFicticios() {
 
   return usuarios;
 }
-/* ── Base de datos principal en memoria ── */
-let DB_USUARIOS = generarUsuariosFicticios();
-
-/* ── Usuario autenticado actualmente (null = no logueado) ── */
-let usuarioActual = null;
-
-/* ── Plan que se va a cambiar (para el modal) ── */
-let planPendiente = null;
+/* ── Estado global de la aplicación (se exporta como un único objeto
+      para que el resto de los módulos puedan leerlo y mutarlo) ── */
+export const db = {
+  DB_USUARIOS: generarUsuariosFicticios(),   // Base de datos principal en memoria
+  usuarioActual: null,                       // Usuario logueado (null = no logueado)
+  planPendiente: null                        // Plan que se va a cambiar (para el modal)
+};

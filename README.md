@@ -32,22 +32,25 @@ Aplicación web de gestión de gimnasio desarrollada con HTML, CSS y JavaScript 
 files/
 ├── index.html                   # Estructura principal de la app
 ├── style.css                    # Estilos globales
-├── script.js                    # Punto de entrada — instancia todas las clases
-├── basededatos.js               # Clase BaseDeDatos
-├── funcionesdedatos.js          # Clase FuncionesDeDatos
-├── funcionesderenderizado.JS    # Clase FuncionesDeRenderizado
+├── script.js                    # Punto de entrada — importa todos los módulos,
+│                                 #   instancia las clases e inicializa los listeners
+├── basededatos.js               # Objeto db (estado global: usuarios, sesión, plan pendiente)
+├── funcionesdedatos.js          # Módulo de funciones de datos (se agrupan como "datos")
+├── funcionesderenderizado.js    # Clase FuncionesDeRenderizado
 ├── navegacionsecciones.js       # Clase NavegacionSecciones
 ├── autenticacion.js             # Clase Autenticacion
 ├── cambiodeplan.js              # Clase CambioDePlan
-├── utilidades.js                # Clase Utilidades
-└── eventlistener.js             # Clase EventListeners
+├── utilidades.js                # Módulo de funciones de UI (se agrupan como "util")
+└── eventlistener.js             # Módulo con initEventListeners(), conecta el DOM
 ```
 
 ---
 
 ## ⚙️ Arquitectura
 
-Cada módulo está encapsulado en una **clase JavaScript**. `script.js` actúa como punto de entrada, instancia todas las clases respetando el orden de dependencias e inyecta las referencias necesarias entre módulos.
+El proyecto combina dos enfoques: los módulos con estado o lógica de UI compleja (`FuncionesDeRenderizado`, `NavegacionSecciones`, `Autenticacion`, `CambioDePlan`) están encapsulados en **clases JavaScript** con inyección de dependencias por constructor. Los módulos más simples (`basededatos.js`, `funcionesdedatos.js`, `utilidades.js`, `eventlistener.js`) exportan un objeto de estado o funciones sueltas con ES Modules (`export` / `import`), sin necesidad de instanciarse con `new`.
+
+`script.js` actúa como punto de entrada: importa todos los módulos, agrupa las funciones exportadas en los objetos `datos` y `util`, instancia las clases respetando el orden de dependencias, inyecta las referencias necesarias entre ellas y finalmente llama a `initEventListeners()` para conectar los listeners del DOM.
 
 ---
 
@@ -56,21 +59,14 @@ Cada módulo está encapsulado en una **clase JavaScript**. `script.js` actúa c
 ```mermaid
 classDiagram
     class BaseDeDatos {
-        +PLANES: Array
-        +ESTADOS: Array
-        +NOMBRES: Array
-        +APELLIDOS: Array
+        <<objeto>>
         +DB_USUARIOS: Array
         +usuarioActual: Object
         +planPendiente: String
-        -_randomInt(min, max) int
-        -_pick(arr) any
-        -_makeEmail(nombre, apellido) String
-        -_generarUsuariosFicticios() Array
     }
 
     class FuncionesDeDatos {
-        -db: BaseDeDatos
+        <<módulo>>
         +obtenerTopRanking(n) Array
         +obtenerPosicionRanking(usuario) int
         +autenticarUsuario(email, password) Object
@@ -82,6 +78,7 @@ classDiagram
     }
 
     class FuncionesDeRenderizado {
+        <<class>>
         -db: BaseDeDatos
         -datos: FuncionesDeDatos
         +renderizarDashboard() void
@@ -91,12 +88,14 @@ classDiagram
     }
 
     class NavegacionSecciones {
+        <<class>>
         -renderizado: FuncionesDeRenderizado
         +mostrarPantalla(id) void
         +mostrarSeccion(seccion) void
     }
 
     class Autenticacion {
+        <<class>>
         -db: BaseDeDatos
         -datos: FuncionesDeDatos
         -nav: NavegacionSecciones
@@ -109,6 +108,7 @@ classDiagram
     }
 
     class CambioDePlan {
+        <<class>>
         -db: BaseDeDatos
         -datos: FuncionesDeDatos
         -renderizado: FuncionesDeRenderizado
@@ -119,6 +119,7 @@ classDiagram
     }
 
     class Utilidades {
+        <<módulo>>
         +mostrarMensajeAuth(texto, tipo) void
         +mostrarToast(mensaje, tipo) void
         +limpiarFormularios() void
@@ -126,18 +127,12 @@ classDiagram
         +cambiarTab(tab) void
     }
 
-    class EventListeners {
-        -auth: Autenticacion
-        -cambioPlan: CambioDePlan
-        -nav: NavegacionSecciones
-        -renderizado: FuncionesDeRenderizado
-        -util: Utilidades
-        -db: BaseDeDatos
-        -datos: FuncionesDeDatos
-        +init() void
+    class EventListener {
+        <<módulo>>
+        +initEventListeners(db, datos, util, nav, auth, cambioPlan, renderizado) void
     }
 
-    FuncionesDeDatos --> BaseDeDatos : usa
+    FuncionesDeDatos --> BaseDeDatos : usa (import)
     FuncionesDeRenderizado --> BaseDeDatos : usa
     FuncionesDeRenderizado --> FuncionesDeDatos : usa
     NavegacionSecciones --> FuncionesDeRenderizado : usa
@@ -150,34 +145,33 @@ classDiagram
     CambioDePlan --> FuncionesDeDatos : usa
     CambioDePlan --> FuncionesDeRenderizado : usa
     CambioDePlan --> Utilidades : usa
-    EventListeners --> Autenticacion : orquesta
-    EventListeners --> CambioDePlan : orquesta
-    EventListeners --> NavegacionSecciones : orquesta
-    EventListeners --> FuncionesDeRenderizado : orquesta
-    EventListeners --> Utilidades : orquesta
-    EventListeners --> BaseDeDatos : orquesta
-    EventListeners --> FuncionesDeDatos : orquesta
+    EventListener --> Autenticacion : orquesta
+    EventListener --> CambioDePlan : orquesta
+    EventListener --> NavegacionSecciones : orquesta
+    EventListener --> FuncionesDeRenderizado : orquesta
+    EventListener --> Utilidades : orquesta
+    EventListener --> BaseDeDatos : orquesta
+    EventListener --> FuncionesDeDatos : orquesta
 
     class ScriptJS {
         <<punto de entrada>>
         +db: BaseDeDatos
-        +util: Utilidades
         +datos: FuncionesDeDatos
+        +util: Utilidades
         +renderizado: FuncionesDeRenderizado
         +nav: NavegacionSecciones
         +auth: Autenticacion
         +cambioPlan: CambioDePlan
-        +listeners: EventListeners
     }
 
-    ScriptJS --> BaseDeDatos : instancia
-    ScriptJS --> Utilidades : instancia
-    ScriptJS --> FuncionesDeDatos : instancia
+    ScriptJS --> BaseDeDatos : importa
+    ScriptJS --> FuncionesDeDatos : importa
+    ScriptJS --> Utilidades : importa
     ScriptJS --> FuncionesDeRenderizado : instancia
     ScriptJS --> NavegacionSecciones : instancia
     ScriptJS --> Autenticacion : instancia
     ScriptJS --> CambioDePlan : instancia
-    ScriptJS --> EventListeners : instancia e inicializa
+    ScriptJS --> EventListener : invoca initEventListeners()
 ```
 
 ---
