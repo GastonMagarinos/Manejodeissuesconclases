@@ -1,7 +1,7 @@
 /* ──────────────────────────────────────────────────────────────
    2. FUNCIONES DE DATOS
    ────────────────────────────────────────────────────────────── */
-
+import { db } from './basededatos.js';
 /**
  * Ordena todos los usuarios de MAYOR a MENOR asistencia
  * y retorna el Top N (por defecto 10).
@@ -10,8 +10,8 @@
  * @param {number} n - Cuántos usuarios retornar
  * @returns {Array} - Arreglo ordenado de los N más constantes
  */
-function obtenerTopRanking(n = 10) {
-  return [...DB_USUARIOS]
+export function obtenerTopRanking(n = 10) {
+  return [...db.DB_USUARIOS]
     .sort((a, b) => b.asistencias_al_mes - a.asistencias_al_mes)
     .slice(0, n);
 }
@@ -23,8 +23,8 @@ function obtenerTopRanking(n = 10) {
  * @param {Object} usuario
  * @returns {number} Posición (1 = el mejor)
  */
-function obtenerPosicionRanking(usuario) {
-  const ordenados = [...DB_USUARIOS]
+export function obtenerPosicionRanking(usuario) {
+  const ordenados = [...db.DB_USUARIOS]
     .sort((a, b) => b.asistencias_al_mes - a.asistencias_al_mes);
   return ordenados.findIndex(u => u.id === usuario.id) + 1;
 }
@@ -37,8 +37,8 @@ function obtenerPosicionRanking(usuario) {
  * @param {string} password
  * @returns {Object|null} El usuario o null si no se encontró
  */
-function autenticarUsuario(email, password) {
-  return DB_USUARIOS.find(
+export function autenticarUsuario(email, password) {
+  return db.DB_USUARIOS.find(
     u => u.email.toLowerCase() === email.toLowerCase().trim()
       && u.password === password
   ) || null;
@@ -50,8 +50,8 @@ function autenticarUsuario(email, password) {
  * @param {string} email
  * @returns {boolean}
  */
-function emailExiste(email) {
-  return DB_USUARIOS.some(u => u.email.toLowerCase() === email.toLowerCase().trim());
+export function emailExiste(email) {
+  return db.DB_USUARIOS.some(u => u.email.toLowerCase() === email.toLowerCase().trim());
 }
 
 /**
@@ -64,19 +64,19 @@ function emailExiste(email) {
  * @param {string} plan - "Premium" | "Básico" | "Pase Diario"
  * @returns {Object} El usuario recién creado
  */
-function registrarUsuario(nombre, email, password, plan) {
+export function registrarUsuario(nombre, email, password, plan) {
   const nuevoUsuario = {
-    id: DB_USUARIOS.length + 1,       // ID autoincremental
+    id: db.DB_USUARIOS.length + 1,
     nombre: nombre.trim(),
     email: email.toLowerCase().trim(),
     password,
     plan,
-    estado: "Activo",                  // Siempre activo al registrarse
-    asistencias_al_mes: 0,             // Empieza de cero
+    estado: "Activo",
+    asistencias_al_mes: 0,
     fecha_registro: new Date().toISOString().split("T")[0]
   };
 
-  DB_USUARIOS.push(nuevoUsuario);      // Se añade en memoria
+ db.DB_USUARIOS.push(nuevoUsuario);
   return nuevoUsuario;
 }
 
@@ -87,15 +87,14 @@ function registrarUsuario(nombre, email, password, plan) {
  * @param {number} userId
  * @param {string} nuevoPlan
  */
-function actualizarPlanUsuario(userId, nuevoPlan) {
-  const usuario = DB_USUARIOS.find(u => u.id === userId);
+export function actualizarPlanUsuario(userId, nuevoPlan) {
+  const usuario = db.DB_USUARIOS.find(u => u.id === userId);
   if (usuario) {
     usuario.plan = nuevoPlan;
-    usuario.estado = "Activo";          // Reactivar al cambiar de plan
-    // Reflejamos el cambio también en usuarioActual
-    if (usuarioActual && usuarioActual.id === userId) {
-      usuarioActual.plan   = nuevoPlan;
-      usuarioActual.estado = "Activo";
+    usuario.estado = "Activo";
+    if (db.usuarioActual && db.usuarioActual.id === userId) {
+      db.usuarioActual.plan   = nuevoPlan;
+      db.usuarioActual.estado = "Activo";
     }
   }
 }
@@ -107,7 +106,7 @@ function actualizarPlanUsuario(userId, nuevoPlan) {
  * @param {Object} usuario
  * @returns {Array} Lista de objetos {emoji, label, unlocked}
  */
-function calcularLogros(usuario) {
+export function calcularLogros(usuario) {
   const a = usuario.asistencias_al_mes;
   return [
     { emoji: "🥇", label: "Primera visita",   unlocked: a >= 1  },
@@ -127,7 +126,7 @@ function calcularLogros(usuario) {
  * @param {Object} usuario
  * @returns {Array} 7 objetos {dia, asistio}
  */
-function simularHistorial(usuario) {
+export function simularHistorial(usuario) {
   const dias = ["LUN","MAR","MIÉ","JUE","VIE","SÁB","DOM"];
   const probabilidad = usuario.asistencias_al_mes / 30;
   return dias.map(d => ({

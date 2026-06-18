@@ -2,7 +2,7 @@
    6. LÓGICA DE CAMBIO DE PLAN
    ────────────────────────────────────────────────────────────── */
 
-class CambioDePlan {
+export class CambioDePlan {
   /**
    * @param {BaseDeDatos}           db
    * @param {FuncionesDeDatos}      datos

@@ -2,7 +2,7 @@
    4. NAVEGACIÓN ENTRE SECCIONES (SPA)
    ────────────────────────────────────────────────────────────── */
 
-class NavegacionSecciones {
+export class NavegacionSecciones {
   /**
    * @param {FuncionesDeRenderizado} renderizado
    */

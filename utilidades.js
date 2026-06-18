@@ -8,7 +8,7 @@
  * @param {string} texto  - Mensaje a mostrar
  * @param {"error"|"success"|""} tipo
  */
-function mostrarMensajeAuth(texto, tipo) {
+export function mostrarMensajeAuth(texto, tipo) {
   const el = document.getElementById("auth-message");
   if (!texto) {
     el.classList.add("hidden");
@@ -25,7 +25,7 @@ function mostrarMensajeAuth(texto, tipo) {
  * @param {string} mensaje
  * @param {"success"|"error"|""} tipo
  */
-function mostrarToast(mensaje, tipo = "") {
+export function mostrarToast(mensaje, tipo = "") {
   const toast = document.getElementById("toast");
   document.getElementById("toast-msg").textContent = mensaje;
   toast.className = `toast ${tipo ? "toast--" + tipo : ""} show`;
@@ -37,7 +37,7 @@ function mostrarToast(mensaje, tipo = "") {
 /**
  * Limpia todos los formularios de la pantalla auth.
  */
-function limpiarFormularios() {
+export function limpiarFormularios() {
   ["login-email","login-password","reg-nombre","reg-email","reg-password"].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = "";
@@ -50,7 +50,7 @@ function limpiarFormularios() {
  *
  * @param {string} targetId - ID del input de contraseña
  */
-function togglePassword(targetId) {
+export function togglePassword(targetId) {
   const input = document.getElementById(targetId);
   if (!input) return;
   input.type = input.type === "password" ? "text" : "password";
@@ -61,7 +61,7 @@ function togglePassword(targetId) {
  *
  * @param {"login"|"register"} tab
  */
-function cambiarTab(tab) {
+export function cambiarTab(tab) {
   document.querySelectorAll(".auth-tab").forEach(t => {
     t.classList.toggle("active", t.dataset.tab === tab);
   });
